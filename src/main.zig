@@ -1,4 +1,5 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
 
@@ -9,20 +10,10 @@ pub fn main() !void {
     const args = try std.process.argsAlloc(alloc);
     defer std.process.argsFree(alloc, args);
 
-    if (args.len == 1) {
-        var buffered_reader = std.io.bufferedReader(std.io.getStdIn().reader());
-        const stdin = buffered_reader.reader();
-
-        const source = try stdin.readAllAlloc(alloc, std.math.maxInt(usize));
-        defer alloc.free(source);
-
-        var buffered_writer = std.io.bufferedWriter(std.io.getStdOut().writer());
-        const stdout = buffered_writer.writer();
-
+    if (args.len == 3 and std.mem.eql(u8, args[1], "build")) {
+        try buildFile(alloc, args[2]);
+    } else if (args.len == 3 and std.mem.eql(u8, args[1], "run")) {
         // todo
-        try stdout.writeAll(source);
-
-        try buffered_writer.flush();
     } else if (args.len == 2 and std.mem.eql(u8, args[1], "help")) {
         printUsage();
     } else if (args.len == 2 and std.mem.eql(u8, args[1], "version")) {
@@ -33,12 +24,32 @@ pub fn main() !void {
     }
 }
 
+fn buildFile(alloc: Allocator, path: []const u8) !void {
+    var file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
+    const source = try file.readToEndAlloc(alloc, std.math.maxInt(usize));
+    defer alloc.free(source);
+
+    var buffered_writer = std.io.bufferedWriter(std.io.getStdOut().writer());
+    const stdout = buffered_writer.writer();
+
+    // todo
+    try stdout.writeAll(source);
+
+    try buffered_writer.flush();
+}
+
 fn printUsage() void {
     std.debug.print(
-        \\Usage:
-        \\  blocks            Run from stdin to stdout
-        \\  blocks help       Print this help and exit
-        \\  blocks version    Print version and exit
+        \\Usage: blocks [command] [options]
+        \\
+        \\Commands:
+        \\  build       Build specified file
+        \\  run         Build and run specified file
+        \\
+        \\  help        Print this help and exit
+        \\  version     Print version and exit
         \\
     , .{});
 }

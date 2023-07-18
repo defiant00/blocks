@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "current",
+            "name": "build",
             "type": "PowerShell",
             "request": "launch",
-            "script": "$prev = [Console]::OutputEncoding; [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); zig build; Get-Content ${file} | zig-out/bin/blocks.exe; [Console]::OutputEncoding = $prev",
+            "script": "$prev = [Console]::OutputEncoding; [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); zig build run -- build ${file}; [Console]::OutputEncoding = $prev",
             "args": []
         }
     ]
