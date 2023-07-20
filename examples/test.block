@@ -1,0 +1,6 @@
+; simple test file
+
+(print "hello")
+
+"a ""multi-line""
+string"

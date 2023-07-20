@@ -5,7 +5,7 @@
             "name": "build",
             "type": "PowerShell",
             "request": "launch",
-            "script": "$prev = [Console]::OutputEncoding; [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); zig build run -- build ${file}; [Console]::OutputEncoding = $prev",
+            "script": "$prev = [Console]::OutputEncoding; [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); zig build run -- build examples/test.block; [Console]::OutputEncoding = $prev",
             "args": []
         }
     ]

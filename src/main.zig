@@ -1,7 +1,9 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
-const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
+const VM = @import("vm.zig").VM;
+
+const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 1 };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -11,9 +13,9 @@ pub fn main() !void {
     defer std.process.argsFree(alloc, args);
 
     if (args.len == 3 and std.mem.eql(u8, args[1], "build")) {
-        try buildFile(alloc, args[2]);
+        try buildRunFile(alloc, args[2], false);
     } else if (args.len == 3 and std.mem.eql(u8, args[1], "run")) {
-        // todo
+        try buildRunFile(alloc, args[2], true);
     } else if (args.len == 2 and std.mem.eql(u8, args[1], "help")) {
         printUsage();
     } else if (args.len == 2 and std.mem.eql(u8, args[1], "version")) {
@@ -24,7 +26,7 @@ pub fn main() !void {
     }
 }
 
-fn buildFile(alloc: Allocator, path: []const u8) !void {
+fn buildRunFile(alloc: Allocator, path: []const u8, run: bool) !void {
     var file = try std.fs.cwd().openFile(path, .{});
     defer file.close();
 
@@ -33,23 +35,31 @@ fn buildFile(alloc: Allocator, path: []const u8) !void {
 
     var buffered_writer = std.io.bufferedWriter(std.io.getStdOut().writer());
     const stdout = buffered_writer.writer();
+    _ = stdout;
 
-    // todo
-    try stdout.writeAll(source);
+    var vm: VM = undefined;
+    vm.init(alloc);
+    defer vm.deinit();
+
+    try vm.load(source);
+
+    if (run) {
+        try vm.interpret();
+    }
 
     try buffered_writer.flush();
 }
 
 fn printUsage() void {
     std.debug.print(
-        \\Usage: blocks [command] [options]
+        \\Usage: blocks [command]
         \\
         \\Commands:
-        \\  build       Build specified file
-        \\  run         Build and run specified file
+        \\  build [file]    Build specified file
+        \\  run   [file]    Build and run specified file
         \\
-        \\  help        Print this help and exit
-        \\  version     Print version and exit
+        \\  help            Print this help and exit
+        \\  version         Print version and exit
         \\
     , .{});
 }
