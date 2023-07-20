@@ -38,7 +38,7 @@ pub const GcAllocater = struct {
         if (result != null) {
             const before = self.bytes_allocated;
             self.bytes_allocated += len;
-            if (debug.log_gc) {
+            if (debug.print_gc) {
                 std.debug.print("  gc alloc {d} -> {d}\n", .{ before, self.bytes_allocated });
             }
         }
@@ -61,7 +61,7 @@ pub const GcAllocater = struct {
             } else {
                 self.bytes_allocated -= buf.len - new_len;
             }
-            if (debug.log_gc) {
+            if (debug.print_gc) {
                 std.debug.print("  gc resize {d} -> {d}\n", .{ before, self.bytes_allocated });
             }
             return true;
@@ -76,7 +76,7 @@ pub const GcAllocater = struct {
         self.vm.parent_allocator.rawFree(buf, log2_buf_align, ret_addr);
         const before = self.bytes_allocated;
         self.bytes_allocated -= buf.len;
-        if (debug.log_gc) {
+        if (debug.print_gc) {
             std.debug.print("  gc free {d} -> {d}\n", .{ before, self.bytes_allocated });
         }
     }

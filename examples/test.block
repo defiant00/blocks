@@ -1,6 +1,7 @@
 ; simple test file
 
-(print "hello")
+(print "hello ""you""")
 
-"a ""multi-line""
-string"
+(print "a""""""b")
+
+(a b c (1 2 3))

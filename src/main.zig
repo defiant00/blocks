@@ -3,7 +3,7 @@ const Allocator = std.mem.Allocator;
 
 const VM = @import("vm.zig").VM;
 
-const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 1 };
+const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 2 };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -38,14 +38,12 @@ fn buildRunFile(alloc: Allocator, path: []const u8, run: bool) !void {
     _ = stdout;
 
     var vm: VM = undefined;
-    vm.init(alloc);
+    try vm.init(alloc);
     defer vm.deinit();
 
     try vm.load(source);
 
-    if (run) {
-        try vm.interpret();
-    }
+    if (run) try vm.run();
 
     try buffered_writer.flush();
 }
