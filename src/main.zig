@@ -3,7 +3,7 @@ const Allocator = std.mem.Allocator;
 
 const VM = @import("vm.zig").VM;
 
-const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 2 };
+const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 3 };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};

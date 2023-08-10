@@ -37,14 +37,14 @@ pub const Lexer = struct {
         return self.current_index >= self.source.len;
     }
 
-    fn incrLine(self: *Lexer) void {
-        self.line += 1;
-        self.column = 0;
-    }
-
     fn advance(self: *Lexer) void {
+        if (self.peek() == '\n') {
+            self.line += 1;
+            self.column = 0;
+        } else {
+            self.column += 1;
+        }
         self.current_index += 1;
-        self.column += 1;
         if (self.isAtEnd()) self.current_index = self.source.len;
     }
 
@@ -121,7 +121,6 @@ pub const Lexer = struct {
                     break;
                 }
             }
-            if (self.peek() == '\n') self.incrLine();
             self.advance();
         }
 
@@ -144,11 +143,7 @@ pub const Lexer = struct {
             self.advance();
 
             switch (c) {
-                ' ', '\t', '\r' => self.discard(),
-                '\n' => {
-                    self.incrLine();
-                    self.discard();
-                },
+                ' ', '\t', '\r', '\n' => self.discard(),
                 '(' => return self.token(.left_paren),
                 ')' => return self.token(.right_paren),
                 ';' => {
