@@ -1,6 +1,4 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-
 const debug = @import("debug.zig");
 const Lexer = @import("lexer.zig").Lexer;
 const Node = @import("ast.zig").Node;
@@ -30,12 +28,12 @@ fn parseHelper(vm: *VM, lexer: *Lexer, parent: *Node) !void {
                 return;
             },
             .literal => {
-                const val = try vm.copyString(tok.value);
+                const val = try vm.source_strings.copy(tok.value);
                 const node = Node.Literal(val, tok.start_line, tok.start_column);
                 try parent_list.append(node);
             },
             .string => {
-                const val = try vm.copyEscapeString(tok.value);
+                const val = try vm.source_strings.copyEscape(tok.value);
                 const node = Node.String(val, tok.start_line, tok.start_column, tok.end_line, tok.end_column);
                 try parent_list.append(node);
             },

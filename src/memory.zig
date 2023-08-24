@@ -1,6 +1,4 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-
 const debug = @import("debug.zig");
 const VM = @import("vm.zig").VM;
 
@@ -17,7 +15,7 @@ pub const GcAllocater = struct {
         };
     }
 
-    pub fn allocator(self: *GcAllocater) Allocator {
+    pub fn allocator(self: *GcAllocater) std.mem.Allocator {
         return .{
             .ptr = self,
             .vtable = &.{

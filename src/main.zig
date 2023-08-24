@@ -1,9 +1,7 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-
 const VM = @import("vm.zig").VM;
 
-const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 3 };
+const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 4 };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -26,7 +24,7 @@ pub fn main() !void {
     }
 }
 
-fn buildRunFile(alloc: Allocator, path: []const u8, run: bool) !void {
+fn buildRunFile(alloc: std.mem.Allocator, path: []const u8, run: bool) !void {
     var file = try std.fs.cwd().openFile(path, .{});
     defer file.close();
 

@@ -1,3 +1,3 @@
 test {
-    _ = @import("vm.zig");
+    _ = @import("string_pool.zig");
 }
