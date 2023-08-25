@@ -1,7 +1,7 @@
 const std = @import("std");
 const VM = @import("vm.zig").VM;
 
-const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 4 };
+const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 5 };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -26,14 +26,7 @@ pub fn main() !void {
 
 fn buildRunFile(alloc: std.mem.Allocator, path: []const u8, run: bool) !void {
     var file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
-
     const source = try file.readToEndAlloc(alloc, std.math.maxInt(usize));
-    defer alloc.free(source);
-
-    var buffered_writer = std.io.bufferedWriter(std.io.getStdOut().writer());
-    const stdout = buffered_writer.writer();
-    _ = stdout;
 
     var vm: VM = undefined;
     try vm.init(alloc);
@@ -41,9 +34,10 @@ fn buildRunFile(alloc: std.mem.Allocator, path: []const u8, run: bool) !void {
 
     try vm.load(source);
 
-    if (run) try vm.run();
+    alloc.free(source);
+    file.close();
 
-    try buffered_writer.flush();
+    if (run) try vm.run();
 }
 
 fn printUsage() void {
